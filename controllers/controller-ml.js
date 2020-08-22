@@ -44,6 +44,7 @@ module.exports ={
                 res.status(200).send({
                     success: true,
                     status: 200,
+                    rowCount: results.length,
                     message: "Successful",
                     hero: hero
                 });
