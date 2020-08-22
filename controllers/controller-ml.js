@@ -1,4 +1,3 @@
-const router    = require('express').Router();
 const config    = require('../config/database');
 
 let mysql      = require('mysql');
