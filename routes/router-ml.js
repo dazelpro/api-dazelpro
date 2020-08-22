@@ -3,5 +3,6 @@ const mobileLegends         = require('../controllers').mobileLegends;
 
 router.get('/hero', mobileLegends.getHero);
 router.get('/hero/:id', mobileLegends.getHeroById);
+router.get('/role', mobileLegends.getHeroRole);
 
 module.exports = router;
