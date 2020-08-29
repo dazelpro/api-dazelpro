@@ -1,6 +1,6 @@
 /*
 SQLyog Ultimate v12.5.1 (64 bit)
-MySQL - 8.0.13-4 : Database - OxpZQl17sX
+MySQL - 10.4.13-MariaDB : Database - db_api
 *********************************************************************
 */
 
@@ -12,8 +12,6 @@ MySQL - 8.0.13-4 : Database - OxpZQl17sX
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-CREATE DATABASE /*!32312 IF NOT EXISTS*/`OxpZQl17sX` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci */;
-
 /*Table structure for table `table_hero_ml` */
 
 DROP TABLE IF EXISTS `table_hero_ml`;
@@ -50,7 +48,7 @@ insert  into `table_hero_ml`(`hero_id`,`hero_name`,`hero_role`,`hero_avatar`,`he
 (19,'Kimmy','Marksman,Mage','kimmy.jpg','Damage,Poke',0,0,0,0),
 (20,'Hanzo','Assassin','hanzo.jpg','Reap,Burst',0,0,0,0),
 (21,'Layla','Marksman','layla.jpg','Reap',18,95,62,25),
-(22,'Mia','Marksman','mia.jpg','Reap',42,95,62,25),
+(22,'Miya','Marksman','miya.jpg','Reap',42,95,62,25),
 (23,'Hayabusa','Assassin','hayabusa.jpg','Charge,Burst Damage',62,87,50,82),
 (24,'Moskov','Marksman','moskov.jpg','Push,Burst Damage',25,95,42,72),
 (25,'Helcurt','Assassin','helcurt.jpg','Charge,Burst Damage',62,87,50,82),
