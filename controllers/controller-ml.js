@@ -30,7 +30,10 @@ module.exports ={
             pool.getConnection(function(err, connection) {
                 if (err) throw err;
                 connection.query(
-                    `SELECT * FROM table_hero_ml`
+                    `
+                    SELECT * FROM table_hero_ml;
+                    INSERT INTO table_history (history_code,history_ip) VALUES ('ML','${req.clientIp}');
+                    `
                 , function (error, results) {
                     if (error) {
                         console.error(error);
@@ -40,8 +43,7 @@ module.exports ={
                             message: error
                         });	
                     }
-                    
-                    results.forEach(async function(heroloop) {
+                    results[0].forEach(async function(heroloop) {
                         let data = {
                             hero_id : heroloop['hero_id'],
                             hero_name : heroloop['hero_name'],
@@ -55,7 +57,7 @@ module.exports ={
                     res.status(200).send({
                         success: true,
                         status: 200,
-                        rowCount: results.length,
+                        rowCount: results[0].length,
                         message: "Successful",
                         hero: hero
                     });
@@ -105,7 +107,10 @@ module.exports ={
         pool.getConnection(function(err, connection) {
             if (err) throw err;
             connection.query(
-                `SELECT * FROM table_hero_ml WHERE hero_id = ${req.params["id"]}`
+                `
+                SELECT * FROM table_hero_ml WHERE hero_id = ${req.params["id"]};
+                INSERT INTO table_history (history_code,history_ip) VALUES ('ML','${req.clientIp}');
+                `
             , function (error, results) {
                 if (error) {
                     console.error(error);
@@ -116,7 +121,7 @@ module.exports ={
                     });	
                 }
                 
-                results.forEach(async function(heroloop) {
+                results[0].forEach(async function(heroloop) {
                     let data = {
                         hero_id : heroloop['hero_id'],
                         hero_name : heroloop['hero_name'],
@@ -136,7 +141,7 @@ module.exports ={
                 res.status(200).send({
                     success: true,
                     status: 200,
-                    rowCount: results.length,
+                    rowCount: results[0].length,
                     message: "Successful",
                     hero: hero
                 });
@@ -151,7 +156,10 @@ module.exports ={
             pool.getConnection(function(err, connection) {
                 if (err) throw err;
                 connection.query(
-                    `SELECT * FROM table_role_hero_ml`
+                    `
+                    SELECT * FROM table_role_hero_ml;
+                    INSERT INTO table_history (history_code,history_ip) VALUES ('ML','${req.clientIp}');
+                    `
                 , function (error, results) {
                     if (error) {
                         console.error(error);
@@ -164,9 +172,9 @@ module.exports ={
                     res.status(200).send({
                         success: true,
                         status: 200,
-                        rowCount: results.length,
+                        rowCount: results[0].length,
                         message: "Successful",
-                        role: results
+                        role: results[0]
                     });
                 });
                 connection.release();
@@ -175,7 +183,10 @@ module.exports ={
             pool.getConnection(function(err, connection) {
                 if (err) throw err;
                 connection.query(
-                    `SELECT * FROM table_hero_ml WHERE hero_role LIKE '%${keyword}%'`
+                    `
+                    SELECT * FROM table_hero_ml WHERE hero_role LIKE '%${keyword}%';
+                    INSERT INTO table_history (history_code,history_ip) VALUES ('ML','${req.clientIp}');
+                    `
                 , function (error, results) {
                     if (error) {
                         console.error(error);
@@ -186,7 +197,7 @@ module.exports ={
                         });	
                     }
                     
-                    results.forEach(async function(heroloop) {
+                    results[0].forEach(async function(heroloop) {
                         let data = {
                             hero_id : heroloop['hero_id'],
                             hero_name : heroloop['hero_name'],
@@ -206,7 +217,7 @@ module.exports ={
                     res.status(200).send({
                         success: true,
                         status: 200,
-                        rowCount: results.length,
+                        rowCount: results[0].length,
                         message: "Successful",
                         hero: hero
                     });
@@ -222,7 +233,10 @@ module.exports ={
             pool.getConnection(function(err, connection) {
                 if (err) throw err;
                 connection.query(
-                    `SELECT * FROM table_specially_hero_ml`
+                    `
+                    SELECT * FROM table_specially_hero_ml;
+                    INSERT INTO table_history (history_code,history_ip) VALUES ('ML','${req.clientIp}');
+                    `
                 , function (error, results) {
                     if (error) {
                         console.error(error);
@@ -235,9 +249,9 @@ module.exports ={
                     res.status(200).send({
                         success: true,
                         status: 200,
-                        rowCount: results.length,
+                        rowCount: results[0].length,
                         message: "Successful",
-                        specially: results
+                        specially: results[0]
                     });
                 });
                 connection.release();
@@ -246,7 +260,10 @@ module.exports ={
             pool.getConnection(function(err, connection) {
                 if (err) throw err;
                 connection.query(
-                    `SELECT * FROM table_hero_ml WHERE hero_specially LIKE '%${keyword}%'`
+                    `
+                    SELECT * FROM table_hero_ml WHERE hero_specially LIKE '%${keyword}%';
+                    INSERT INTO table_history (history_code,history_ip) VALUES ('ML','${req.clientIp}');
+                    `
                 , function (error, results) {
                     if (error) {
                         console.error(error);
@@ -257,7 +274,7 @@ module.exports ={
                         });	
                     }
                     
-                    results.forEach(async function(heroloop) {
+                    results[0].forEach(async function(heroloop) {
                         let data = {
                             hero_id : heroloop['hero_id'],
                             hero_name : heroloop['hero_name'],
@@ -277,7 +294,7 @@ module.exports ={
                     res.status(200).send({
                         success: true,
                         status: 200,
-                        rowCount: results.length,
+                        rowCount: results[0].length,
                         message: "Successful",
                         hero: hero
                     });
