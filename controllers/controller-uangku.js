@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/database");
 
 let mysql = require("mysql");
-const { user } = require("../config/database");
 let pool = mysql.createPool(config);
 
 pool.on("error",(err)=> {
@@ -100,5 +99,8 @@ module.exports ={
         ], (err) => {
             if (err) return next(err);
         });
+    },
+    getHeroById(req,res){
+
     }
 }

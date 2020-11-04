@@ -4,6 +4,10 @@ const helmet        = require('helmet');
 const bodyParser    = require('body-parser');
 const useragent     = require("express-useragent");
 const cors 			= require('cors');
+require("./config/passport");
+const passport      = require("passport");
+const passportLogin = passport.authenticate("jwt", { session: false });
+
 const app           = express();
 
 require('dotenv').config();
@@ -29,6 +33,20 @@ app.get('/',(req,res)=>{
 
 app.use('/mobile-legends',mlRoutes);
 app.use('/uangku-login',uangkuRoutes);
+
+app.use(passportLogin,(req, res, next)=>{
+    let origin = req.headers.origin;
+    let allowedOrigins = ["https://uang.dazelpro.com","http://localhost:4200"]; 
+    if (allowedOrigins.indexOf(origin) < 0) {
+        res.setHeader("Access-Control-Allow-Origin", allowedOrigins);
+    }
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
+    res.setHeader("Access-Control-Allow-Headers", "X-Requested-With", "Content-Type", "Authorization", "Accept");
+    req.decoded = req.user;
+    next();
+});
+
+app.use('/uangku-tes',uangkuRoutes);
 
 app.listen(PORT, ()=>{
     console.log(`Server listening in port : ${PORT}`);
