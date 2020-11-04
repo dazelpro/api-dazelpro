@@ -1,5 +1,7 @@
-const mobileLegends 			= require('./controller-ml');
+const mobileLegends = require('./controller-ml');
+const uangKu = require('./controller-uangku');
 
 module.exports ={
-	mobileLegends
+	mobileLegends,
+	uangKu
 };

@@ -12,6 +12,7 @@ let PORT;
 (NODE_ENV === 'production')?PORT = PORT_SERVER_PRO :PORT = PORT_SERVER_DEV
 
 const mlRoutes       = require('./routes/router-ml');
+const uangkuRoutes       = require('./routes/router-uangku-login');
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -21,10 +22,11 @@ app.use(helmet())
 app.use(morgan('dev'));
 
 app.get('/',(req,res)=>{
-    res.send({'API Version': '1.0.0 Beta'});
+    res.send({'API Version': '2.0.0 Beta'});
 });
 
 app.use('/mobile-legends',mlRoutes);
+app.use('/uangku-login',uangkuRoutes);
 
 app.listen(PORT, ()=>{
     console.log(`Server listening in port : ${PORT}`);
