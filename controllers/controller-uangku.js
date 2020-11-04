@@ -13,12 +13,11 @@ module.exports ={
     auth(req,res){
         async.waterfall([
             (done) => {
-                // Cek User
                 pool.getConnection(function(err, connection) {
                     if (err) throw err;
                     connection.query(
                         `
-                        SELECT * FROM uang_users where userStatus = 0;
+                        SELECT * FROM uang_users where userID = ${req.body.userID} LIMIT 1;
                         `
                     , function (err, userCek) {
                         if (err)
@@ -32,14 +31,49 @@ module.exports ={
                 })
             },
             (userCek, done) => {
-                console.log(userCek[0])
+                if (userCek[0] === undefined){
+                    let data = {
+                        userID : req.body.userID,
+                        userEmail : req.body.userEmail,
+                        userName : req.body.userName,
+                        userPhotoUrl : req.body.userPhotoUrl,
+                        userStatus : req.body.userStatus
+                    };
+                    pool.getConnection(function(err, connection) {
+                        if (err) throw err;
+                        connection.query(
+                            `
+                            INSERT INTO uang_users SET ?
+                            `
+                        , data, function (err, createUser) {
+                            if (err)
+                            return res.status(400).send({
+                                success: false,
+                                message: err
+                            });
+                            done(err, createUser);
+                        });
+                        connection.release();
+                    })
+                } else {
+                    done();
+                }
+            },
+            (createUser, done) => {
+                let data = {
+                    logUser : req.body.userID,
+                    logIpAddress : req.clientIp,
+                    logDevice : req.useragent.platform,
+                    logOs : req.useragent.os,
+                    logBrowser : req.useragent.browser,
+                }
                 pool.getConnection(function(err, connection) {
                     if (err) throw err;
                     connection.query(
                         `
-                        SELECT * FROM uang_category;
+                        INSERT INTO uang_history_login SET ?
                         `
-                    , function (err, category) {
+                    , data, function (err, createUser) {
                         if (err)
                         return res.status(400).send({
                             success: false,
@@ -47,7 +81,7 @@ module.exports ={
                         });
                         return res.status(200).send({
                             success: true,
-                            data: userCek[0]
+                            message: done
                         });
                     });
                     connection.release();

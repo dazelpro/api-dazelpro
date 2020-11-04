@@ -2,6 +2,7 @@ const express       = require('express');
 const morgan        = require('morgan');
 const helmet        = require('helmet');
 const bodyParser    = require('body-parser');
+const useragent     = require("express-useragent");
 const cors 			= require('cors');
 const app           = express();
 
@@ -17,6 +18,7 @@ const uangkuRoutes       = require('./routes/router-uangku-login');
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(useragent.express());
 
 app.use(helmet())
 app.use(morgan('dev'));
