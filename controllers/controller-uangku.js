@@ -1,4 +1,5 @@
 const async = require("async");
+const jwt = require("jsonwebtoken");
 const config = require("../config/database");
 
 let mysql = require("mysql");
@@ -8,6 +9,12 @@ let pool = mysql.createPool(config);
 pool.on("error",(err)=> {
     console.error(err);
 });
+
+require('dotenv').config();
+
+const { 
+    JWTSECRET
+} = process.env;
 
 module.exports ={
     auth(req,res){
@@ -73,15 +80,18 @@ module.exports ={
                         `
                         INSERT INTO uang_history_login SET ?
                         `
-                    , data, function (err, createUser) {
+                    , data, function (err, result) {
                         if (err)
                         return res.status(400).send({
                             success: false,
                             message: err
                         });
+                        let token = jwt.sign({
+                            user: req.body.userID
+                        }, JWTSECRET);
                         return res.status(200).send({
                             success: true,
-                            message: done
+                            token: "Bearer"+ " "+token
                         });
                     });
                     connection.release();
