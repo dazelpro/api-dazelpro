@@ -101,7 +101,6 @@ module.exports ={
         });
     },
     getDataProfile(req,res){
-        console.log(req.decoded[0].userID)
         pool.getConnection(function(err, connection) {
             if (err) throw err;
             connection.query(
@@ -116,7 +115,7 @@ module.exports ={
                 });
                 return res.status(200).send({
                     success: true,
-                    user: data
+                    user: data[0]
                 });
             });
             connection.release();
