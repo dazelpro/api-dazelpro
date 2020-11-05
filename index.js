@@ -16,8 +16,12 @@ const { NODE_ENV, PORT_SERVER_DEV, PORT_SERVER_PRO } = process.env;
 let PORT;
 (NODE_ENV === 'production')?PORT = PORT_SERVER_PRO :PORT = PORT_SERVER_DEV
 
-const mlRoutes       = require('./routes/router-ml');
-const uangkuRoutes       = require('./routes/router-uangku-login');
+// API Public
+const mlRoutes = require('./routes/router-ml');
+
+// Uangku
+const uangkuLoginRoutes = require('./routes/router-uangku-login');
+const uangkuAccountRoutes = require('./routes/router-uangku-account');
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -32,7 +36,7 @@ app.get('/',(req,res)=>{
 });
 
 app.use('/mobile-legends',mlRoutes);
-app.use('/uangku-login',uangkuRoutes);
+app.use('/uangku-login',uangkuLoginRoutes);
 
 app.use(passportLogin,(req, res, next)=>{
     let origin = req.headers.origin;
@@ -46,7 +50,7 @@ app.use(passportLogin,(req, res, next)=>{
     next();
 });
 
-app.use('/uangku-tes',uangkuRoutes);
+app.use('/uangku-account',uangkuAccountRoutes);
 
 app.listen(PORT, ()=>{
     console.log(`Server listening in port : ${PORT}`);

@@ -100,7 +100,26 @@ module.exports ={
             if (err) return next(err);
         });
     },
-    getHeroById(req,res){
-
+    getDataProfile(req,res){
+        console.log(req.decoded[0].userID)
+        pool.getConnection(function(err, connection) {
+            if (err) throw err;
+            connection.query(
+                `
+                SELECT * FROM uang_users where userID = ${req.decoded[0].userID} LIMIT 1;
+                `
+            , function (err, data) {
+                if (err)
+                return res.status(400).send({
+                    success: false,
+                    message: err
+                });
+                return res.status(200).send({
+                    success: true,
+                    user: data
+                });
+            });
+            connection.release();
+        })
     }
 }
