@@ -38,7 +38,7 @@ module.exports ={
             },
             (userCek, done) => {
                 if (userCek[0] === undefined){
-                    let data = {
+                    let dataInsert = {
                         userID : req.body.userID,
                         userEmail : req.body.userEmail,
                         userName : req.body.userName,
@@ -51,7 +51,7 @@ module.exports ={
                             `
                             INSERT INTO uang_users SET ?
                             `
-                        , data, function (err, createUser) {
+                        , dataInsert, function (err, createUser) {
                             if (err)
                             return res.status(400).send({
                                 success: false,
@@ -62,7 +62,28 @@ module.exports ={
                         connection.release();
                     })
                 } else {
-                    done();
+                    let dataUpdate = {
+                        userEmail : req.body.userEmail,
+                        userName : req.body.userName,
+                        userPhotoUrl : req.body.userPhotoUrl,
+                        userStatus : req.body.userStatus
+                    };
+                    pool.getConnection(function(err, connection) {
+                        if (err) throw err;
+                        connection.query(
+                            `
+                            UPDATE uang_users SET ? WHERE userID = ?
+                            `
+                        , [dataUpdate, req.body.userID], function (err, createUser) {
+                            if (err)
+                            return res.status(400).send({
+                                success: false,
+                                message: err
+                            });
+                            done(err, createUser);
+                        });
+                        connection.release();
+                    })
                 }
             },
             (createUser, done) => {
