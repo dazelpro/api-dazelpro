@@ -141,5 +141,29 @@ module.exports ={
             });
             connection.release();
         })
+    },
+    getDataCategory(req,res){
+        pool.getConnection(function(err, connection) {
+            if (err) throw err;
+            connection.query(
+                `
+                SELECT * FROM uang_category where categoryUser IN ('2105', '${req.decoded[0].userID}');
+                `
+            , function (err, data) {
+                if (err)
+                return res.status(400).send({
+                    success: false,
+                    message: err
+                });
+                return res.status(200).send({
+                    success: true,
+                    user: data
+                });
+            });
+            connection.release();
+        })
+    },
+    insertCategory(req,res){
+
     }
 }
