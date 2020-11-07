@@ -157,13 +157,38 @@ module.exports ={
                 });
                 return res.status(200).send({
                     success: true,
-                    user: data
+                    data: data,
+                    message: "Berhasil ambil data"
                 });
             });
             connection.release();
         })
     },
     insertCategory(req,res){
-
+        let data = {
+            categoryUser : req.body.userID,
+            categoryType : req.body.type,
+            categoryDescription : req.body.desc
+        }
+        pool.getConnection(function(err, connection) {
+            if (err) throw err;
+            connection.query(
+                `
+                INSERT INTO uang_category SET ?
+                `
+            , data, function (err, result) {
+                if (err)
+                return res.status(400).send({
+                    success: false,
+                    message: err
+                });
+                return res.status(200).send({
+                    success: true,
+                    data: result,
+                    message: "Berhasil insert data"
+                });
+            });
+            connection.release();
+        })
     }
 }
