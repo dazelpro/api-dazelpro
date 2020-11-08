@@ -147,7 +147,8 @@ module.exports ={
             if (err) throw err;
             connection.query(
                 `
-                SELECT * FROM uang_category where categoryUser IN ('2105', '${req.decoded[0].userID}');
+                SELECT * FROM uang_category WHERE categoryType = '0' AND categoryUser IN ('2105', '${req.decoded[0].userID}');
+                SELECT * FROM uang_category WHERE categoryType = '1' AND categoryUser IN ('2105', '${req.decoded[0].userID}');
                 `
             , function (err, data) {
                 if (err)
@@ -157,7 +158,8 @@ module.exports ={
                 });
                 return res.status(200).send({
                     success: true,
-                    data: data,
+                    in: data[0],
+                    out: data[1],
                     message: "Berhasil ambil data"
                 });
             });
