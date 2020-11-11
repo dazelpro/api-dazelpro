@@ -168,7 +168,7 @@ module.exports ={
     },
     insertCategory(req,res){
         let data = {
-            categoryUser : req.body.userID,
+            categoryUser : req.decoded[0].userID,
             categoryType : req.body.type,
             categoryDescription : req.body.desc
         }
@@ -188,6 +188,31 @@ module.exports ={
                     success: true,
                     data: result,
                     message: "Berhasil insert data"
+                });
+            });
+            connection.release();
+        })
+    },
+    updateCategory(req,res){
+        console.log(req.body.id)
+        let dataUpdate = {
+            categoryDescription : req.body.desc
+        }
+        pool.getConnection(function(err, connection) {
+            if (err) throw err;
+            connection.query(
+                `
+                UPDATE uang_category SET ? WHERE categoryID = ?
+                `
+            , [dataUpdate, req.body.id], function (err, data) {
+                if (err)
+                return res.status(400).send({
+                    success: false,
+                    message: err
+                });
+                return res.status(200).send({
+                    success: true,
+                    message: "Berhasil update data"
                 });
             });
             connection.release();
