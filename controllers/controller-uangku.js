@@ -194,7 +194,6 @@ module.exports ={
         })
     },
     updateCategory(req,res){
-        console.log(req.body.id)
         let dataUpdate = {
             categoryDescription : req.body.desc
         }
