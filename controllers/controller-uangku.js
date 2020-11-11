@@ -187,7 +187,7 @@ module.exports ={
                 return res.status(200).send({
                     success: true,
                     data: result,
-                    message: "Berhasil insert data"
+                    message: "Berhasil simpan data"
                 });
             });
             connection.release();
@@ -211,7 +211,28 @@ module.exports ={
                 });
                 return res.status(200).send({
                     success: true,
-                    message: "Berhasil update data"
+                    message: "Berhasil edit data"
+                });
+            });
+            connection.release();
+        })
+    },
+    deleteCategory(req,res){
+        pool.getConnection(function(err, connection) {
+            if (err) throw err;
+            connection.query(
+                `
+                DELETE FROM uang_category WHERE categoryID = ?
+                `
+            , [req.body.id], function (err, data) {
+                if (err)
+                return res.status(400).send({
+                    success: false,
+                    message: err
+                });
+                return res.status(200).send({
+                    success: true,
+                    message: "Berhasil hapus data"
                 });
             });
             connection.release();
