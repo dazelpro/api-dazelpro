@@ -142,6 +142,33 @@ module.exports ={
             connection.release();
         })
     },
+    getDataDashboard(req,res){
+        pool.getConnection(function(err, connection) {
+            if (err) throw err;
+            connection.query(
+                `
+                -- Get Saldo
+                SELECT (inAmt - outAmt) AS totalSaldo FROM 
+                    uang_cash_in JOIN uang_users 
+                ON userID = inUser 
+                    JOIN uang_cash_out 
+                ON userID = outUser
+                WHERE userID = ${req.decoded[0].userID}
+                `
+            , function (err, data) {
+                if (err)
+                return res.status(400).send({
+                    success: false,
+                    message: err
+                });
+                return res.status(200).send({
+                    success: true,
+                    data: data
+                });
+            });
+            connection.release();
+        })
+    },
     getDataCategory(req,res){
         pool.getConnection(function(err, connection) {
             if (err) throw err;
@@ -237,5 +264,61 @@ module.exports ={
             });
             connection.release();
         })
-    }
+    },
+    insertTransactionIn(req,res){
+        let data = {
+            inUser : req.decoded[0].userID,
+            inCategory : req.body.idCategory,
+            inDescription : req.body.desc,
+            inAmt : req.body.amt
+        }
+        pool.getConnection(function(err, connection) {
+            if (err) throw err;
+            connection.query(
+                `
+                INSERT INTO uang_cash_in SET ?
+                `
+            , data, function (err, result) {
+                if (err)
+                return res.status(400).send({
+                    success: false,
+                    message: err
+                });
+                return res.status(200).send({
+                    success: true,
+                    data: result,
+                    message: "Berhasil simpan data"
+                });
+            });
+            connection.release();
+        })
+    },
+    insertTransactionOut(req,res){
+        let data = {
+            outUser : req.decoded[0].userID,
+            outCategory : req.body.idCategory,
+            outDescription : req.body.desc,
+            outAmt : req.body.amt
+        }
+        pool.getConnection(function(err, connection) {
+            if (err) throw err;
+            connection.query(
+                `
+                INSERT INTO uang_cash_out SET ?
+                `
+            , data, function (err, result) {
+                if (err)
+                return res.status(400).send({
+                    success: false,
+                    message: err
+                });
+                return res.status(200).send({
+                    success: true,
+                    data: result,
+                    message: "Berhasil simpan data"
+                });
+            });
+            connection.release();
+        })
+    },
 }

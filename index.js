@@ -23,6 +23,7 @@ const mlRoutes = require('./routes/router-ml');
 const uangkuLoginRoutes = require('./routes/router-uangku-login');
 const uangkuAccountRoutes = require('./routes/router-uangku-account');
 const uangkuCategoryRoutes = require('./routes/router-uangku-category');
+const uangkuTransactionRoutes = require('./routes/router-uangku-transaction');
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -53,6 +54,7 @@ app.use(passportLogin,(req, res, next)=>{
 
 app.use('/uangku-account',uangkuAccountRoutes);
 app.use('/uangku-category',uangkuCategoryRoutes);
+app.use('/uangku-transaction',uangkuTransactionRoutes);
 
 app.listen(PORT, ()=>{
     console.log(`Server listening in port : ${PORT}`);
