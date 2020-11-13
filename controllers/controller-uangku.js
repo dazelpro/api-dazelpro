@@ -148,12 +148,38 @@ module.exports ={
             connection.query(
                 `
                 -- Get Saldo
-                SELECT (inAmt - outAmt) AS totalSaldo FROM 
+                SELECT 
+                (SELECT IFNULL(SUM(inAmt), 0) AS masuk FROM 
                     uang_cash_in JOIN uang_users 
                 ON userID = inUser 
-                    JOIN uang_cash_out 
-                ON userID = outUser
-                WHERE userID = ${req.decoded[0].userID}
+                WHERE userID = ${req.decoded[0].userID})-
+                (SELECT IFNULL(SUM(outAmt), 0) AS masuk FROM 
+                    uang_cash_out JOIN uang_users 
+                ON userID = outUser 
+                WHERE userID = ${req.decoded[0].userID})
+                AS totalSaldo;
+
+                -- Get Top 4 Uang Masuk
+                SELECT * FROM uang_cash_in 
+                    JOIN uang_users 
+                ON userID = inUser 
+                    JOIN uang_category 
+                ON inCategory = categoryID
+                WHERE categoryType = 0 
+                    AND userID = ${req.decoded[0].userID}
+                ORDER BY inCreateAt DESC
+                LIMIT 4;
+
+                -- Get Top 4 Uang keluar
+                SELECT * FROM uang_cash_out 
+                    JOIN uang_users 
+                ON userID = outUser 
+                    JOIN uang_category 
+                ON outCategory = categoryID
+                WHERE categoryType = 1 
+                    AND userID = ${req.decoded[0].userID}
+                ORDER BY outCreateAt DESC
+                LIMIT 4;
                 `
             , function (err, data) {
                 if (err)
@@ -260,6 +286,28 @@ module.exports ={
                 return res.status(200).send({
                     success: true,
                     message: "Berhasil hapus data"
+                });
+            });
+            connection.release();
+        })
+    },
+    getDataTransactionIn(req,res){
+        pool.getConnection(function(err, connection) {
+            if (err) throw err;
+            connection.query(
+                `
+                SELECT * FROM uang_cash_in JOIN uang_category ON categoryID = inCategory JOIN uang_users ON inUser = userID WHERE userID = ${req.decoded[0].userID};
+                `
+            , function (err, data) {
+                if (err)
+                return res.status(400).send({
+                    success: false,
+                    message: err
+                });
+                return res.status(200).send({
+                    success: true,
+                    data: data,
+                    message: "Berhasil ambil data"
                 });
             });
             connection.release();
