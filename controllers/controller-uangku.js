@@ -313,6 +313,75 @@ module.exports ={
             connection.release();
         })
     },
+    getDataTransactionOut(req,res){
+        let param = req.params["id"];
+        let queryParam = '';
+        if (param == 0) {
+            queryParam = `
+                SELECT * FROM uang_cash_out 
+                JOIN uang_category 
+                    ON categoryID = outCategory 
+                JOIN uang_users 
+                    ON outUser = userID 
+                WHERE userID = ${req.decoded[0].userID}
+                    AND DATE(outCreateAt) = DATE(NOW())
+                ORDER BY outCreateAt DESC;
+            `
+        } else if (param == 1) {
+            queryParam = `
+                SELECT * FROM uang_cash_out 
+                JOIN uang_category 
+                    ON categoryID = outCategory 
+                JOIN uang_users 
+                    ON outUser = userID 
+                WHERE userID = ${req.decoded[0].userID}
+                    AND outCreateAt BETWEEN ADDDATE(NOW(),-7) AND NOW() 
+                ORDER BY outCreateAt DESC;
+            `
+        } else if (param == 2) {
+            queryParam = `
+                SELECT * FROM uang_cash_out 
+                JOIN uang_category 
+                    ON categoryID = outCategory 
+                JOIN uang_users 
+                    ON outUser = userID 
+                WHERE userID = ${req.decoded[0].userID}
+                    AND outCreateAt BETWEEN NOW() - INTERVAL 30 DAY AND NOW()
+                ORDER BY outCreateAt DESC;
+            `
+        }  else if (param == 3) {
+            queryParam = `
+                SELECT * FROM uang_cash_out 
+                JOIN uang_category 
+                    ON categoryID = outCategory 
+                JOIN uang_users 
+                    ON outUser = userID 
+                WHERE userID = ${req.decoded[0].userID}
+                ORDER BY outCreateAt DESC;
+            `
+        }
+        // console.log(queryParam)
+        pool.getConnection(function(err, connection) {
+            if (err) throw err;
+            connection.query(
+                `
+                ${queryParam}
+                `
+            , function (err, data) {
+                if (err)
+                return res.status(400).send({
+                    success: false,
+                    message: err
+                });
+                return res.status(200).send({
+                    success: true,
+                    data: data,
+                    message: "Berhasil ambil data"
+                });
+            });
+            connection.release();
+        })
+    },
     insertTransactionIn(req,res){
         let data = {
             inUser : req.decoded[0].userID,
@@ -364,6 +433,105 @@ module.exports ={
                     success: true,
                     data: result,
                     message: "Berhasil simpan data"
+                });
+            });
+            connection.release();
+        })
+    },
+    updateTransactionIn(req,res){
+        let data = {
+            inCategory : req.body.idCategory,
+            inDescription : req.body.desc,
+            inAmt : req.body.amt
+        }
+        pool.getConnection(function(err, connection) {
+            if (err) throw err;
+            connection.query(
+                `
+                UPDATE uang_cash_in SET ? WHERE inID = ?
+                `
+            , [data, req.body.id], function (err, result) {
+                if (err)
+                return res.status(400).send({
+                    success: false,
+                    message: err
+                });
+                return res.status(200).send({
+                    success: true,
+                    data: result,
+                    message: "Berhasil update data"
+                });
+            });
+            connection.release();
+        })
+    },
+    updateTransactionOut(req,res){
+        let data = {
+            outCategory : req.body.idCategory,
+            outDescription : req.body.desc,
+            outAmt : req.body.amt,
+            outCreateAt : req.body.date
+        }
+        pool.getConnection(function(err, connection) {
+            if (err) throw err;
+            connection.query(
+                `
+                UPDATE uang_cash_out SET ? WHERE outID = ?
+                `
+            , [data, req.body.id], function (err, result) {
+                if (err)
+                return res.status(400).send({
+                    success: false,
+                    message: err
+                });
+                return res.status(200).send({
+                    success: true,
+                    data: result,
+                    message: "Berhasil update data"
+                });
+            });
+            connection.release();
+        })
+    },
+    deleteTransactionIn(req,res){
+        pool.getConnection(function(err, connection) {
+            if (err) throw err;
+            connection.query(
+                `
+                DELETE FROM uang_cash_in WHERE inID = ?
+                `
+            , [req.body.id], function (err, result) {
+                if (err)
+                return res.status(400).send({
+                    success: false,
+                    message: err
+                });
+                return res.status(200).send({
+                    success: true,
+                    data: result,
+                    message: "Berhasil hapus data"
+                });
+            });
+            connection.release();
+        })
+    },
+    deleteTransactionOut(req,res){
+        pool.getConnection(function(err, connection) {
+            if (err) throw err;
+            connection.query(
+                `
+                DELETE FROM uang_cash_out WHERE outID = ?
+                `
+            ,[req.body.id], function (err, result) {
+                if (err)
+                return res.status(400).send({
+                    success: false,
+                    message: err
+                });
+                return res.status(200).send({
+                    success: true,
+                    data: result,
+                    message: "Berhasil hapus data"
                 });
             });
             connection.release();
