@@ -142,6 +142,32 @@ module.exports ={
             connection.release();
         })
     },
+    editDataProfile(req,res){
+        let dataUpdate = {
+            userName : req.body.nama,
+            userBio : req.body.bio,
+            userPhone : req.body.telp
+        }
+        pool.getConnection(function(err, connection) {
+            if (err) throw err;
+            connection.query(
+                `
+                UPDATE uang_users SET ? WHERE userID = ?
+                `
+            , [dataUpdate, req.decoded[0].userID], function (err, data) {
+                if (err)
+                return res.status(400).send({
+                    success: false,
+                    message: err
+                });
+                return res.status(200).send({
+                    success: true,
+                    message: "Berhasil edit data"
+                });
+            });
+            connection.release();
+        })
+    },
     getDataDashboard(req,res){
         pool.getConnection(function(err, connection) {
             if (err) throw err;
@@ -292,12 +318,56 @@ module.exports ={
         })
     },
     getDataTransactionIn(req,res){
+        let param = req.params["id"];
+        let queryParam = '';
+        if (param == 0) {
+            queryParam = `
+                SELECT * FROM uang_cash_in 
+                JOIN uang_category 
+                    ON categoryID = inCategory 
+                JOIN uang_users 
+                    ON inUser = userID 
+                WHERE userID = ${req.decoded[0].userID}
+                    AND DATE(inCreateAt) = DATE(NOW())
+                ORDER BY inCreateAt DESC;
+            `
+        } else if (param == 1) {
+            queryParam = `
+                SELECT * FROM uang_cash_in
+                JOIN uang_category 
+                    ON categoryID = inCategory 
+                JOIN uang_users 
+                    ON inUser = userID 
+                WHERE userID = ${req.decoded[0].userID}
+                    AND inCreateAt BETWEEN ADDDATE(NOW(),-7) AND NOW() 
+                ORDER BY inCreateAt DESC;
+            `
+        } else if (param == 2) {
+            queryParam = `
+                SELECT * FROM uang_cash_in
+                JOIN uang_category 
+                    ON categoryID = inCategory 
+                JOIN uang_users 
+                    ON inUser = userID 
+                WHERE userID = ${req.decoded[0].userID}
+                    AND inCreateAt BETWEEN NOW() - INTERVAL 30 DAY AND NOW()
+                ORDER BY inCreateAt DESC;
+            `
+        }  else if (param == 3) {
+            queryParam = `
+                SELECT * FROM uang_cash_in
+                JOIN uang_category 
+                    ON categoryID = inCategory 
+                JOIN uang_users 
+                    ON inUser = userID 
+                WHERE userID = ${req.decoded[0].userID}
+                ORDER BY inCreateAt DESC;
+            `
+        }
         pool.getConnection(function(err, connection) {
             if (err) throw err;
             connection.query(
-                `
-                SELECT * FROM uang_cash_in JOIN uang_category ON categoryID = inCategory JOIN uang_users ON inUser = userID WHERE userID = ${req.decoded[0].userID};
-                `
+                `${queryParam}`
             , function (err, data) {
                 if (err)
                 return res.status(400).send({
@@ -364,9 +434,7 @@ module.exports ={
         pool.getConnection(function(err, connection) {
             if (err) throw err;
             connection.query(
-                `
-                ${queryParam}
-                `
+                `${queryParam}`
             , function (err, data) {
                 if (err)
                 return res.status(400).send({
@@ -442,7 +510,8 @@ module.exports ={
         let data = {
             inCategory : req.body.idCategory,
             inDescription : req.body.desc,
-            inAmt : req.body.amt
+            inAmt : req.body.amt,
+            inCreateAt : req.body.date
         }
         pool.getConnection(function(err, connection) {
             if (err) throw err;
