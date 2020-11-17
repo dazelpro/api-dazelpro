@@ -606,4 +606,63 @@ module.exports ={
             connection.release();
         })
     },
+    getMainReport(req,res){
+        pool.getConnection(function(err, connection) {
+            if (err) throw err;
+            connection.query(
+                `
+                -- QUERY TOTAL IN
+                SELECT SUM(inAmt) AS totalIn FROM uang_cash_in 
+                    JOIN uang_users 
+                ON userID = inUser 
+                    JOIN uang_category 
+                ON inCategory = categoryID
+                WHERE categoryType = 0 
+                    AND userID = ${req.decoded[0].userID};
+                
+                -- QUERY TOTAL OUT
+                SELECT SUM(outAmt) AS totalOut FROM uang_cash_out 
+                    JOIN uang_users 
+                ON userID = outUser 
+                    JOIN uang_category 
+                ON outCategory = categoryID
+                WHERE categoryType = 1 
+                    AND userID = ${req.decoded[0].userID};
+                
+                -- QUERY TOP KATEGORY IN
+                SELECT categoryID, categoryDescription, SUM(inAmt) AS total FROM uang_cash_in 
+                    JOIN uang_users 
+                ON userID = inUser 
+                    JOIN uang_category 
+                ON inCategory = categoryID
+                WHERE categoryType = 0 
+                    AND userID = ${req.decoded[0].userID}
+                GROUP BY categoryDescription
+                ORDER BY total DESC;
+
+                -- QUERY TOP KATEGORY OUT
+                SELECT categoryID, categoryDescription, SUM(outAmt) AS total FROM uang_cash_out 
+                    JOIN uang_users 
+                ON userID = outUser 
+                    JOIN uang_category 
+                ON outCategory = categoryID
+                WHERE categoryType = 1 
+                    AND userID = ${req.decoded[0].userID}
+                GROUP BY categoryDescription
+                ORDER BY total DESC;
+                `
+            , function (err, data) {
+                if (err)
+                return res.status(400).send({
+                    success: false,
+                    message: err
+                });
+                return res.status(200).send({
+                    success: true,
+                    data: data
+                });
+            });
+            connection.release();
+        })
+    },
 }
