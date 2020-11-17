@@ -607,9 +607,13 @@ module.exports ={
         })
     },
     getMainReport(req,res){
+        const todaysDate = new Date();
+        const currentYear = todaysDate.getFullYear();
+
         let param = req.params["id"];
         let queryParamIn = '';
         let queryParamOut = '';
+
         if (param == 0) {
             queryParamIn = `
                 AND DATE(inCreateAt) = DATE(NOW())
@@ -633,7 +637,10 @@ module.exports ={
             `
         }  else if (param == 3) {
             queryParamIn = `
-            
+                AND YEAR(inCreateAt) = ${currentYear}
+            `
+            queryParamOut = `
+                AND YEAR(outCreateAt) = ${currentYear}
             `
         }
         pool.getConnection(function(err, connection) {
