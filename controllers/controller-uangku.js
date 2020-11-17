@@ -607,17 +607,47 @@ module.exports ={
         })
     },
     getMainReport(req,res){
+        let param = req.params["id"];
+        let queryParamIn = '';
+        let queryParamOut = '';
+        if (param == 0) {
+            queryParamIn = `
+                AND DATE(inCreateAt) = DATE(NOW())
+            `
+            queryParamOut = `
+                AND DATE(outCreateAt) = DATE(NOW())
+            `
+        } else if (param == 1) {
+            queryParamIn = `
+                AND inCreateAt BETWEEN ADDDATE(NOW(),-7) AND NOW()
+            `
+            queryParamOut = `
+                AND outCreateAt BETWEEN ADDDATE(NOW(),-7) AND NOW()
+            `
+        } else if (param == 2) {
+            queryParamIn = `
+                AND inCreateAt BETWEEN NOW() - INTERVAL 30 DAY AND NOW()
+            `
+            queryParamOut = `
+                AND outCreateAt BETWEEN NOW() - INTERVAL 30 DAY AND NOW()
+            `
+        }  else if (param == 3) {
+            queryParamIn = `
+            
+            `
+        }
         pool.getConnection(function(err, connection) {
             if (err) throw err;
             connection.query(
                 `
                 -- QUERY TOTAL IN
-                SELECT SUM(inAmt) AS totalIn FROM uang_cash_in 
+                SELECT IFNULL(SUM(inAmt),0) AS totalIn FROM uang_cash_in 
                     JOIN uang_users 
                 ON userID = inUser 
                     JOIN uang_category 
                 ON inCategory = categoryID
                 WHERE categoryType = 0 
+                    ${queryParamIn}
                     AND userID = ${req.decoded[0].userID};
                 
                 -- QUERY TOTAL OUT
@@ -627,6 +657,7 @@ module.exports ={
                     JOIN uang_category 
                 ON outCategory = categoryID
                 WHERE categoryType = 1 
+                    ${queryParamOut}
                     AND userID = ${req.decoded[0].userID};
                 
                 -- QUERY TOP KATEGORY IN
@@ -637,6 +668,7 @@ module.exports ={
                 ON inCategory = categoryID
                 WHERE categoryType = 0 
                     AND userID = ${req.decoded[0].userID}
+                    ${queryParamIn}
                 GROUP BY categoryDescription
                 ORDER BY total DESC;
 
@@ -648,6 +680,7 @@ module.exports ={
                 ON outCategory = categoryID
                 WHERE categoryType = 1 
                     AND userID = ${req.decoded[0].userID}
+                    ${queryParamOut}
                 GROUP BY categoryDescription
                 ORDER BY total DESC;
                 `
