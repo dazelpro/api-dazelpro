@@ -43,7 +43,7 @@ app.use('/uangku-login',uangkuLoginRoutes);
 
 app.use(passportLogin,(req, res, next)=>{
     let origin = req.headers.origin;
-    let allowedOrigins = ["https://uang.dazelpro.com","http://localhost:4200"]; 
+    let allowedOrigins = ["https://uangku.dazelpro.com","http://localhost:4200"]; 
     if (allowedOrigins.indexOf(origin) < 0) {
         res.setHeader("Access-Control-Allow-Origin", allowedOrigins);
     }

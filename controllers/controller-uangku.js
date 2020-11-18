@@ -690,6 +690,30 @@ module.exports ={
                     ${queryParamOut}
                 GROUP BY categoryDescription
                 ORDER BY total DESC;
+
+                -- QUERY RINCIAN IN
+                SELECT categoryID, inDescription, SUM(inAmt) AS total FROM uang_cash_in 
+                    JOIN uang_users 
+                ON userID = inUser 
+                    JOIN uang_category 
+                ON inCategory = categoryID
+                WHERE categoryType = 0 
+                    AND userID = ${req.decoded[0].userID}
+                    ${queryParamIn}
+                GROUP BY inID
+                ORDER BY total DESC;
+
+                -- QUERY RINCIAN OUT
+                SELECT categoryID, outDescription, SUM(outAmt) AS total FROM uang_cash_out 
+                    JOIN uang_users 
+                ON userID = outUser 
+                    JOIN uang_category 
+                ON outCategory = categoryID
+                WHERE categoryType = 1 
+                    AND userID = ${req.decoded[0].userID}
+                    ${queryParamOut}
+                GROUP BY outID
+                ORDER BY total DESC;
                 `
             , function (err, data) {
                 if (err)
