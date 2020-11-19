@@ -658,7 +658,7 @@ module.exports ={
                     AND userID = ${req.decoded[0].userID};
                 
                 -- QUERY TOTAL OUT
-                SELECT SUM(outAmt) AS totalOut FROM uang_cash_out 
+                SELECT IFNULL(SUM(outAmt),0) AS totalOut FROM uang_cash_out 
                     JOIN uang_users 
                 ON userID = outUser 
                     JOIN uang_category 
