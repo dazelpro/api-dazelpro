@@ -65,8 +65,7 @@ module.exports ={
                     let dataUpdate = {
                         userEmail : req.body.userEmail,
                         userName : req.body.userName,
-                        userPhotoUrl : req.body.userPhotoUrl,
-                        userStatus : req.body.userStatus
+                        userPhotoUrl : req.body.userPhotoUrl
                     };
                     pool.getConnection(function(err, connection) {
                         if (err) throw err;
@@ -122,25 +121,28 @@ module.exports ={
         });
     },
     getDataProfile(req,res){
-        pool.getConnection(function(err, connection) {
-            if (err) throw err;
-            connection.query(
-                `
-                SELECT * FROM uang_users where userID = ${req.decoded[0].userID} LIMIT 1;
-                `
-            , function (err, data) {
-                if (err)
-                return res.status(400).send({
-                    success: false,
-                    message: err
+        let id = req.decoded[0].userID;
+        if (id !== null || id !== undefined) {
+            pool.getConnection(function(err, connection) {
+                if (err) throw err;
+                connection.query(
+                    `
+                    SELECT * FROM uang_users where userID = ${id} LIMIT 1;
+                    `
+                , function (err, data) {
+                    if (err)
+                    return res.status(400).send({
+                        success: false,
+                        message: err
+                    });
+                    return res.status(200).send({
+                        success: true,
+                        user: data[0]
+                    });
                 });
-                return res.status(200).send({
-                    success: true,
-                    user: data[0]
-                });
-            });
-            connection.release();
-        })
+                connection.release();
+            })
+        }
     },
     editDataProfile(req,res){
         let dataUpdate = {
