@@ -586,6 +586,28 @@ module.exports ={
             connection.release();
         })
     },
+    deleteTransactionAllIn(req,res){
+        pool.getConnection(function(err, connection) {
+            if (err) throw err;
+            connection.query(
+                `
+                DELETE FROM uang_cash_in WHERE inUser = ?
+                `
+            , [req.decoded[0].userID], function (err, result) {
+                if (err)
+                return res.status(400).send({
+                    success: false,
+                    message: err
+                });
+                return res.status(200).send({
+                    success: true,
+                    data: result,
+                    message: "Berhasil hapus data"
+                });
+            });
+            connection.release();
+        })
+    },
     deleteTransactionOut(req,res){
         pool.getConnection(function(err, connection) {
             if (err) throw err;
@@ -594,6 +616,28 @@ module.exports ={
                 DELETE FROM uang_cash_out WHERE outID = ?
                 `
             ,[req.body.id], function (err, result) {
+                if (err)
+                return res.status(400).send({
+                    success: false,
+                    message: err
+                });
+                return res.status(200).send({
+                    success: true,
+                    data: result,
+                    message: "Berhasil hapus data"
+                });
+            });
+            connection.release();
+        })
+    },
+    deleteTransactionAllOut(req,res){
+        pool.getConnection(function(err, connection) {
+            if (err) throw err;
+            connection.query(
+                `
+                DELETE FROM uang_cash_out WHERE outUser = ?
+                `
+            ,[req.decoded[0].userID], function (err, result) {
                 if (err)
                 return res.status(400).send({
                     success: false,
