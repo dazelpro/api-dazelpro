@@ -127,7 +127,7 @@ module.exports ={
                 if (err) throw err;
                 connection.query(
                     `
-                    SELECT * FROM uang_users where userID = ${id} LIMIT 1;
+                    SELECT userID, userEmail, userName, userPhone, userBio, userPhotoUrl, userStatus, userPin FROM uang_users where userID = ${id} LIMIT 1;
                     `
                 , function (err, data) {
                     if (err)
@@ -187,7 +187,7 @@ module.exports ={
                 WHERE userID = ${req.decoded[0].userID})
                 AS totalSaldo;
 
-                -- Get Top 4 Uang Masuk
+                -- Get Top 6 Uang Masuk
                 SELECT * FROM uang_cash_in 
                     JOIN uang_users 
                 ON userID = inUser 
@@ -195,10 +195,11 @@ module.exports ={
                 ON inCategory = categoryID
                 WHERE categoryType = 0 
                     AND userID = ${req.decoded[0].userID}
+                    AND inCreateAt BETWEEN NOW() - INTERVAL 30 DAY AND NOW()
                 ORDER BY inCreateAt DESC
-                LIMIT 4;
+                LIMIT 6;
 
-                -- Get Top 4 Uang keluar
+                -- Get Top 6 Uang keluar
                 SELECT * FROM uang_cash_out 
                     JOIN uang_users 
                 ON userID = outUser 
@@ -206,8 +207,9 @@ module.exports ={
                 ON outCategory = categoryID
                 WHERE categoryType = 1 
                     AND userID = ${req.decoded[0].userID}
+                    AND outCreateAt BETWEEN NOW() - INTERVAL 30 DAY AND NOW()
                 ORDER BY outCreateAt DESC
-                LIMIT 4;
+                LIMIT 6;
                 `
             , function (err, data) {
                 if (err)
