@@ -26,6 +26,9 @@ const uangkuCategoryRoutes = require('./routes/router-uangku-category');
 const uangkuTransactionRoutes = require('./routes/router-uangku-transaction');
 const uangkuReportRoutes = require('./routes/router-uangku-report');
 
+// My Task
+const taskLoginRoutes = require('./routes/router-task-login');
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -40,6 +43,7 @@ app.get('/',(req,res)=>{
 
 app.use('/mobile-legends',mlRoutes);
 app.use('/uangku-login',uangkuLoginRoutes);
+app.use('/task-login',taskLoginRoutes);
 
 app.use(passportLogin,(req, res, next)=>{
     let origin = req.headers.origin;
@@ -53,10 +57,14 @@ app.use(passportLogin,(req, res, next)=>{
     next();
 });
 
+// Uangku Protec
 app.use('/uangku-account',uangkuAccountRoutes);
 app.use('/uangku-category',uangkuCategoryRoutes);
 app.use('/uangku-transaction',uangkuTransactionRoutes);
 app.use('/uangku-report',uangkuReportRoutes);
+
+// Task Protec
+app.use('/task-account',uangkuAccountRoutes);
 
 app.listen(PORT, ()=>{
     console.log(`Server listening in port : ${PORT}`);
