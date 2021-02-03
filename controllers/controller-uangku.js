@@ -195,7 +195,7 @@ module.exports ={
                 ON inCategory = categoryID
                 WHERE categoryType = 0 
                     AND userID = ${req.decoded[0].userID}
-                    AND inCreateAt BETWEEN NOW() - INTERVAL 30 DAY AND NOW()
+                    AND inCreateAt BETWEEN NOW() - INTERVAL 29 DAY AND NOW()
                 ORDER BY inCreateAt DESC
                 LIMIT 6;
 
@@ -387,6 +387,38 @@ module.exports ={
             connection.release();
         })
     },
+
+    searchDataTransactionIn(req,res){
+        let queryParam = '';
+        queryParam = `
+            SELECT * FROM uang_cash_in 
+            JOIN uang_category 
+                ON categoryID = inCategory 
+            JOIN uang_users 
+                ON inUser = userID 
+            WHERE inDescription = ${req.decoded[0].id}
+            ORDER BY inCreateAt DESC;
+        `
+        pool.getConnection(function(err, connection) {
+            if (err) throw err;
+            connection.query(
+                `${queryParam}`
+            , function (err, data) {
+                if (err)
+                return res.status(400).send({
+                    success: false,
+                    message: err
+                });
+                return res.status(200).send({
+                    success: true,
+                    data: data,
+                    message: "Berhasil ambil data"
+                });
+            });
+            connection.release();
+        })
+    },
+    
     getDataTransactionOut(req,res){
         let param = req.params["id"];
         let queryParam = '';
@@ -512,10 +544,10 @@ module.exports ={
     },
     updateTransactionIn(req,res){
         let data = {
+            inCreateAt : req.body.date,
             inCategory : req.body.idCategory,
             inDescription : req.body.desc,
-            inAmt : req.body.amt,
-            inCreateAt : req.body.date
+            inAmt : req.body.amt
         }
         pool.getConnection(function(err, connection) {
             if (err) throw err;
@@ -540,10 +572,10 @@ module.exports ={
     },
     updateTransactionOut(req,res){
         let data = {
+            outCreateAt : req.body.date,
             outCategory : req.body.idCategory,
             outDescription : req.body.desc,
-            outAmt : req.body.amt,
-            outCreateAt : req.body.date
+            outAmt : req.body.amt
         }
         pool.getConnection(function(err, connection) {
             if (err) throw err;

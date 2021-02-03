@@ -11,5 +11,6 @@ router.post('/update-in', uangKu.updateTransactionIn);
 router.post('/update-out', uangKu.updateTransactionOut);
 router.post('/delete-in', uangKu.deleteTransactionIn);
 router.post('/delete-out', uangKu.deleteTransactionOut);
+router.get('/search/:id', uangKu.searchDataTransactionIn);
 
 module.exports = router;
